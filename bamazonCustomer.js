@@ -10,14 +10,33 @@ var con = mysql.createConnection({
 
 con.connect();
 
+let firstQuestion = () => {
+  con.query("SELECT * FROM products;", function(error, results, fields) {
+    for (let i = 0; i < results.length; i++) {
+      if (error) throw error;
+      console.log(
+        "\nItem ID: " +
+          results[i].item_id +
+          " || Product Name: " +
+          results[i].product_name +
+          " || Price: " +
+          results[i].price +
+          " || Stock Quantity: " +
+          results[i].stock_quantity +
+          "\n"
+      );
+    }
+  });
+};
+
+firstQuestion();
 function initialPrompts() {
   inquirer
     .prompt([
       {
         name: "id",
         type: "input",
-        message:
-          "Please enter the product ID of the item that you'd like to purchase:  "
+        message: "Please enter the ID of the item you'd like to purchase:  "
       },
       {
         name: "numUnits",
@@ -29,18 +48,43 @@ function initialPrompts() {
     .then(answers => {
       let item = answers.id;
       let quantity = answers.numUnits;
-
-      // mysql query
-      connection.query("SELECT 1", function(error, results, fields) {
+      con.query(`SELECT * FROM products WHERE item_id = ${item};`, function(
+        error,
+        results,
+        fields
+      ) {
         if (error) throw error;
-        // connected!
+        // resursive logoic if not enough inventory for sale
+        if (results[0].stock_quantity < quantity) {
+          console.log(
+            `There are not enough ${results[0].product_name} to meet your request.  Please try again`
+          );
+          initialPrompts();
+        }
+        let newQuantity = results[0].stock_quantity - quantity;
+
+        // logic if stock quanity falls to 0 --> removes item from database
+        if (newQuantity === 0) {
+          con.query(`DELETE FROM products WHERE item_id = ${item};`, function(
+            error,
+            results,
+            fields
+          ) {
+            if (error) throw error;
+          });
+          con.end();
+          //logic to update DB with new quantity of item
+        } else {
+          con.query(
+            `UPDATE products SET stockquantity = ${newQuantity} WHERE item_id = ${item};`,
+            function(error, results, fields) {
+              if (error) throw error;
+            }
+          );
+          con.end();
+        }
       });
-      if (answers.guess === this.correctLetter) {
-        // Letter(answers.guess);
-      } else {
-        lives--;
-      }
     });
 }
 
-con.end();
+initialPrompts();
