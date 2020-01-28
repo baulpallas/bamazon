@@ -88,3 +88,5 @@ function initialPrompts() {
 }
 
 initialPrompts();
+
+module.exports = firstQuestion;
