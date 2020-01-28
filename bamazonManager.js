@@ -45,7 +45,6 @@ function managerPrompts() {
           break;
       }
     });
-  con.end();
 }
 
 function viewProducts() {
