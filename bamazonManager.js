@@ -14,7 +14,7 @@ function managerPrompts() {
   inquirer
     .prompt([
       {
-        name: "viewProducts",
+        name: "products",
         type: "list",
         message: "What would you like to do:  ",
         choices: [
@@ -27,8 +27,8 @@ function managerPrompts() {
       }
     ])
     .then(answers => {
-      switch (answers.viewProducts) {
-        case "View Products for Sale ":
+      switch (answers.products) {
+        case "View Products for Sale":
           viewProducts();
           break;
         case "View Low Inventory":
@@ -48,7 +48,8 @@ function managerPrompts() {
   con.end();
 }
 
-let viewProducts = () => {
+function viewProducts() {
+  console.log("hello!");
   con.query("SELECT * FROM products;", function(error, results, fields) {
     for (let i = 0; i < results.length; i++) {
       if (error) throw error;
@@ -65,6 +66,6 @@ let viewProducts = () => {
       );
     }
   });
-};
+}
 
 managerPrompts();
