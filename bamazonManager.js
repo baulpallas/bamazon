@@ -73,7 +73,6 @@ function viewProducts() {
 function viewLowInv() {
   let query = "SELECT * FROM products WHERE stock_quantity < 10;";
   con.query(query, function(error, results, fields) {
-    console.log(results);
     for (let i = 0; i < results.length; i++) {
       if (error) throw error;
       console.log(
@@ -88,6 +87,17 @@ function viewLowInv() {
           "\n"
       );
     }
+  });
+}
+
+function addtoInv() {
+  let query = `INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?, ?, ?, ?)`;
+  con.query(query, ["jaiwolf tickets", "events", 70.0, 7], function(
+    error,
+    results,
+    fields
+  ) {
+    if (error) throw error;
   });
 }
 
