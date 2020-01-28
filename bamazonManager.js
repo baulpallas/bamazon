@@ -30,12 +30,15 @@ function managerPrompts() {
       switch (answers.products) {
         case "View Products for Sale":
           viewProducts();
+          managerPrompts();
           break;
         case "View Low Inventory":
           viewLowInv();
+          managerPrompts();
           break;
         case "Add to Inventory":
           addtoInv();
+          managerPrompts();
           break;
         case "Add New Products":
           addNewProducts();
@@ -50,6 +53,27 @@ function managerPrompts() {
 function viewProducts() {
   console.log("hello!");
   con.query("SELECT * FROM products;", function(error, results, fields) {
+    if (error) throw error;
+    for (let i = 0; i < results.length; i++) {
+      console.log(
+        "\nItem ID: " +
+          results[i].item_id +
+          " || Product Name: " +
+          results[i].product_name +
+          " || Price: " +
+          results[i].price +
+          " || Stock Quantity: " +
+          results[i].stock_quantity +
+          "\n"
+      );
+    }
+  });
+}
+
+function viewLowInv() {
+  let query = "SELECT * FROM products WHERE stock_quantity < 10;";
+  con.query(query, function(error, results, fields) {
+    console.log(results);
     for (let i = 0; i < results.length; i++) {
       if (error) throw error;
       console.log(
