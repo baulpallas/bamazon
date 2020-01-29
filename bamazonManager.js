@@ -121,20 +121,34 @@ function addToInv() {
         }
       ])
       .then(answers => {
-        let query = `UPDATE products (product_name, stock_quantity) VALUES (?, ?, ?, ?)`;
-        con.query(
-          query,
-          [
-            answers.newProduct,
-            answers.category,
-            answers.price,
-            answers.quantity
-          ],
-          function(error, results, fields) {
-            if (error) throw error;
-            managerPrompts();
+        // switch (answers.products) {
+        //   case "":
+        //     viewProducts();
+        //     managerPrompts();
+        //     break;
+        // }
+        for (let i = 0; i < DBarray.length; i++) {
+          switch (answers.product) {
+            case DBarray[i]:
+              let selectedProduct = DBarray[i];
+              console.log(selectedProduct);
+              break;
           }
-        );
+        }
+        // let query = `UPDATE products WHERE (product_name, stock_quantity) VALUES (?, ?, ?, ?)`;
+        // con.query(
+        //   query,
+        //   [
+        //     answers.newProduct,
+        //     answers.category,
+        //     answers.price,
+        //     answers.quantity
+        //   ],
+        //   function(error, results, fields) {
+        //     if (error) throw error;
+        //     managerPrompts();
+        //   }
+        // );
       });
   });
 }
@@ -143,7 +157,6 @@ function addNewProducts() {
   inquirer
     .prompt([
       {
-        name: "newProduct",
         type: "input",
         message: "What would you like to add?"
       },
