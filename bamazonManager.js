@@ -37,8 +37,7 @@ function managerPrompts() {
           managerPrompts();
           break;
         case "Add to Inventory":
-          addtoInv();
-          managerPrompts();
+          addToInv();
           break;
         case "Add New Products":
           addNewProducts();
@@ -90,15 +89,91 @@ function viewLowInv() {
   });
 }
 
-function addtoInv() {
-  let query = `INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?, ?, ?, ?)`;
-  con.query(query, ["jaiwolf tickets", "events", 70.0, 7], function(
-    error,
-    results,
-    fields
-  ) {
+function addToInv() {
+  let DBarray = [];
+  let newItem;
+  con.query("SELECT * FROM products;", function(error, results, fields) {
     if (error) throw error;
+    for (let i = 0; i < results.length; i++) {
+      newItem =
+        "Item ID: " +
+        results[i].item_id +
+        " || Product Name: " +
+        results[i].product_name +
+        " || Price: " +
+        results[i].price +
+        " || Stock Quantity: " +
+        results[i].stock_quantity;
+      DBarray.push(newItem);
+    }
+    inquirer
+      .prompt([
+        {
+          name: "product",
+          type: "list",
+          message: "What product would you like to add inventory to?",
+          choices: DBarray
+        },
+        {
+          name: "addedInv",
+          type: "input",
+          message: "How much inventory would you like to add to this product?"
+        }
+      ])
+      .then(answers => {
+        let query = `UPDATE products (product_name, stock_quantity) VALUES (?, ?, ?, ?)`;
+        con.query(
+          query,
+          [
+            answers.newProduct,
+            answers.category,
+            answers.price,
+            answers.quantity
+          ],
+          function(error, results, fields) {
+            if (error) throw error;
+            managerPrompts();
+          }
+        );
+      });
   });
+}
+
+function addNewProducts() {
+  inquirer
+    .prompt([
+      {
+        name: "newProduct",
+        type: "input",
+        message: "What would you like to add?"
+      },
+      {
+        name: "category",
+        type: "input",
+        message: "What category?"
+      },
+      {
+        name: "price",
+        type: "input",
+        message: "What would you like to charge?"
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "How many would you like to stock?"
+      }
+    ])
+    .then(answers => {
+      let query = `INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?, ?, ?, ?)`;
+      con.query(
+        query,
+        [answers.newProduct, answers.category, answers.price, answers.quantity],
+        function(error, results, fields) {
+          if (error) throw error;
+          managerPrompts();
+        }
+      );
+    });
 }
 
 managerPrompts();
