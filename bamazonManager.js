@@ -117,38 +117,21 @@ function addToInv() {
         {
           name: "addedInv",
           type: "input",
-          message: "How much inventory would you like to add to this product?"
+          message: "What would you like to set the inventory to?"
         }
       ])
       .then(answers => {
-        // switch (answers.products) {
-        //   case "":
-        //     viewProducts();
-        //     managerPrompts();
-        //     break;
-        // }
         for (let i = 0; i < DBarray.length; i++) {
           switch (answers.product) {
             case DBarray[i]:
-              let selectedProduct = DBarray[i];
-              console.log(selectedProduct);
+              let query = `UPDATE products SET stock_quantity = ${answers.addedInv} WHERE item_id = ${results[i].item_id}`;
+              con.query(query, function(error, results, fields) {
+                if (error) throw error;
+                managerPrompts();
+              });
               break;
           }
         }
-        // let query = `UPDATE products WHERE (product_name, stock_quantity) VALUES (?, ?, ?, ?)`;
-        // con.query(
-        //   query,
-        //   [
-        //     answers.newProduct,
-        //     answers.category,
-        //     answers.price,
-        //     answers.quantity
-        //   ],
-        //   function(error, results, fields) {
-        //     if (error) throw error;
-        //     managerPrompts();
-        //   }
-        // );
       });
   });
 }
