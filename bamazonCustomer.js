@@ -1,14 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 
-// var con = mysql.createConnection({
-//   connectionLimit: 50, // default = 10
-//   host: "localhost",
-//   user: "paul",
-//   password: "password",
-//   database: "bamazonDB"
-// });
-
 var con = mysql.createConnection({
   host: "localhost",
   user: "paul",
@@ -17,12 +9,12 @@ var con = mysql.createConnection({
 });
 con.connect();
 
-let firstQuestion = () => {
+let displayInv = () => {
   con.query("SELECT * FROM products;", function(error, results, fields) {
     for (let i = 0; i < results.length; i++) {
       if (error) throw error;
       console.log(
-        "\nItem ID: " +
+        "Item ID: " +
           results[i].item_id +
           " || Product Name: " +
           results[i].product_name +
@@ -30,13 +22,16 @@ let firstQuestion = () => {
           results[i].price +
           " || Stock Quantity: " +
           results[i].stock_quantity +
-          "\n"
+          " || Product Sales: " +
+          results[i].product_sales
       );
     }
   });
 };
 
-firstQuestion();
+displayInv();
+initialPrompts();
+
 function initialPrompts() {
   inquirer
     .prompt([
@@ -69,6 +64,7 @@ function initialPrompts() {
           initialPrompts();
         }
         let newQuantity = results[0].stock_quantity - quantity;
+        let totalSales = quantity * results[0].price + results[0].product_sales;
 
         // logic if stock quanity falls to 0 --> removes item from database
         if (newQuantity === 0) {
@@ -82,16 +78,19 @@ function initialPrompts() {
           con.end();
           //logic to update DB with new quantity of item
         } else {
-          con.query(
-            `UPDATE products SET stock_quantity = ${newQuantity} WHERE item_id = ${item};`,
-            function(error, results, fields) {
-              if (error) throw error;
-            }
-          );
+          let query1 = `UPDATE products SET stock_quantity = ${newQuantity} WHERE item_id = ${item};`;
+
+          let query2 = `UPDATE products SET product_sales = ${totalSales} WHERE item_id = ${item};`;
+
+          // let query2 = ``;
+          con.query(query1, function(error, results, fields) {
+            if (error) throw error;
+          });
+          con.query(query2, function(error, results, fields) {
+            if (error) throw error;
+          });
           con.end();
         }
       });
     });
 }
-
-initialPrompts();
