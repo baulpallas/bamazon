@@ -63,7 +63,8 @@ function viewProducts() {
           results[i].price +
           " || Stock Quantity: " +
           results[i].stock_quantity +
-          "\n"
+          " || Product Sales: " +
+          results[i].product_sales
       );
     }
   });
@@ -75,7 +76,7 @@ function viewLowInv() {
     for (let i = 0; i < results.length; i++) {
       if (error) throw error;
       console.log(
-        "\nItem ID: " +
+        "Item ID: " +
           results[i].item_id +
           " || Product Name: " +
           results[i].product_name +
@@ -104,6 +105,7 @@ function addToInv() {
         results[i].price +
         " || Stock Quantity: " +
         results[i].stock_quantity;
+      +" || Product Sales: " + results[i].product_sales;
       DBarray.push(newItem);
     }
     inquirer

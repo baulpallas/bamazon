@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS bamazonDB;
-CREATE database bamazonDB;
+Terminal close -- exit!
+B;
 
 USE bamazonDB;
 
